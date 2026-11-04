@@ -12,8 +12,11 @@
 | 软件 | 版本 |
 |---|---|
 | JDK | 17 及以上 |
-| Maven | 3.6 及以上（IDEA 自带的也可以） |
+| Maven | 不需要单独安装（项目自带 Maven Wrapper：`mvnw` / `mvnw.cmd`） |
 | MySQL | 8.x |
+
+> **Windows 用户**：详细的安装、部署、演示和排错步骤见 [docs/windows-deploy.md](docs/windows-deploy.md)。
+> 也可以直接双击 `deploy\windows\build.bat` 打包，再双击 `dist\dorm-repair\start.bat` 启动（脚本会自动检查 Java、端口和 MySQL）。
 
 ## 二、快速开始
 
@@ -23,9 +26,9 @@
    - 脚本使用 `CREATE TABLE IF NOT EXISTS` 和 `INSERT IGNORE`，**重复启动不会清空或覆盖已有数据**。
 3. **启动项目**（二选一）：
    - IDEA：打开项目，运行 `com.dorm.repair.DormRepairApplication` 的 `main` 方法；
-   - 命令行：
+   - 命令行（Windows 用 `mvnw.cmd`，Linux / macOS 用 `./mvnw`）：
      ```bash
-     mvn spring-boot:run
+     ./mvnw spring-boot:run
      ```
 4. 浏览器访问 <http://localhost:8080>。
 
@@ -82,6 +85,8 @@ src/main/resources
 ├── db/schema.sql, db/data.sql    建表脚本、预置账号
 ├── templates/                    Thymeleaf 页面（fragments/ 为公共片段）
 └── static/css/style.css          样式（不依赖 CDN，断网可用）
+deploy/windows/                   Windows 打包与部署脚本（build.bat 生成 dist\dorm-repair\，内含 start.bat / stop.bat）
+docs/windows-deploy.md            Windows 部署与操作指南
 ```
 
 分层调用关系：`页面 → Controller → Service → Mapper → MySQL`。
@@ -138,7 +143,7 @@ src/main/resources
 ## 九、测试
 
 ```bash
-mvn test
+./mvnw test
 ```
 
 测试使用 H2 内存数据库（MySQL 兼容模式），**不需要安装 MySQL**。`DormRepairApplicationTests` 覆盖：

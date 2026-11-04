@@ -12,3 +12,5 @@ uploads/
 # 系统文件
 .DS_Store
 *.log
+# Windows 打包输出（deploy/windows/build.bat 生成）
+dist/

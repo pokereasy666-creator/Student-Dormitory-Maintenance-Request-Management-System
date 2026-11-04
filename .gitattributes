@@ -1,0 +1,8 @@
+# Windows 脚本统一使用 CRLF 换行（.bat 用 LF 换行在部分情况下会解析出错）
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+deploy/windows/package/README.txt text eol=crlf
+# Linux / macOS 脚本使用 LF
+mvnw    text eol=lf
+*.sh    text eol=lf

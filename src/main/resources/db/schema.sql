@@ -1,7 +1,8 @@
 -- =====================================================================
 -- 学生宿舍报修管理系统 建表脚本（MySQL 8）
 -- 应用启动时自动执行；使用 IF NOT EXISTS，已有表和数据不会被删除。
--- 也可以手动在 MySQL 客户端中执行：先 CREATE DATABASE dorm_repair; USE dorm_repair;
+-- 也可以手动在 MySQL 客户端中执行：先 CREATE DATABASE dorm_repair DEFAULT CHARSET utf8mb4; USE dorm_repair;
+-- 表显式指定 utf8mb4 字符集：即使数据库默认是 latin1（如 MySQL 5.7），中文也能正常保存。
 -- =====================================================================
 
 -- 用户表：学生和维修人员共用，role 区分角色
@@ -18,7 +19,7 @@ CREATE TABLE IF NOT EXISTS sys_user (
     updated_at  DATETIME     NOT NULL COMMENT '最后修改时间',
     PRIMARY KEY (id),
     UNIQUE KEY uk_user_username (username)
-) COMMENT = '用户表';
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '用户表';
 
 -- 报修工单表：评价与工单一对一，直接存放在本表
 CREATE TABLE IF NOT EXISTS repair_order (
@@ -44,4 +45,4 @@ CREATE TABLE IF NOT EXISTS repair_order (
     KEY idx_order_repairer (repairer_id),
     CONSTRAINT fk_order_student FOREIGN KEY (student_id) REFERENCES sys_user (id),
     CONSTRAINT fk_order_repairer FOREIGN KEY (repairer_id) REFERENCES sys_user (id)
-) COMMENT = '报修工单表';
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '报修工单表';
