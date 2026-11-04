@@ -1,0 +1,49 @@
+# ==================== 学生宿舍报修管理系统 配置文件 ====================
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 2h            # 登录 2 小时无操作自动失效
+      tracking-modes: cookie # 只用 cookie 保存会话，不在 URL 中拼接 ;jsessionid=（防止会话 id 泄露）
+      cookie:
+        http-only: true      # JS 无法读取会话 cookie
+        same-site: lax       # 其他网站发起的 POST 请求不携带会话 cookie（简单的 CSRF 防护）
+  tomcat:
+    max-swallow-size: -1     # 上传超限时仍能正常返回提示页，而不是直接断开连接
+
+spring:
+  application:
+    name: dorm-repair
+  # ---------- 数据库：只需安装好 MySQL 8，改成自己的账号密码即可；数据库不存在会自动创建 ----------
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/dorm_repair?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  # ---------- 启动时自动建表、写入预置维修人员账号 ----------
+  # 脚本使用 CREATE TABLE IF NOT EXISTS / INSERT IGNORE，重复启动不会覆盖已有数据
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+      data-locations: classpath:db/data.sql
+      encoding: UTF-8
+  # ---------- 图片上传大小限制 ----------
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  thymeleaf:
+    cache: false             # 开发时修改页面刷新即生效；正式部署可改为 true
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true   # 列名 real_name 自动映射到属性 realName
+
+# ---------- 自定义配置 ----------
+app:
+  upload-dir: ./uploads      # 报修图片保存目录（相对于启动目录）
+
+logging:
+  level:
+    com.dorm.repair.mapper: debug        # 控制台打印执行的 SQL，方便调试

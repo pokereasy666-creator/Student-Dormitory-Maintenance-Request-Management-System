@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('提交报修')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('new')}"></header>
+<main class="container narrow">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <section class="card">
+        <h2>提交报修</h2>
+        <!-- 上传图片必须使用 multipart/form-data 编码 -->
+        <form th:action="@{/student/orders}" th:object="${orderForm}" method="post"
+              enctype="multipart/form-data" class="form">
+            <div class="form-row">
+                <label>楼栋
+                    <select th:field="*{building}" required>
+                        <option value="">请选择</option>
+                        <option th:each="b : ${buildings}" th:value="${b}" th:text="${b}"></option>
+                    </select>
+                </label>
+                <label>宿舍号
+                    <input type="text" th:field="*{roomNo}" placeholder="如 302" maxlength="10" required>
+                </label>
+            </div>
+            <div class="field-error" th:if="${#fields.hasErrors('building')}" th:errors="*{building}"></div>
+            <div class="field-error" th:if="${#fields.hasErrors('roomNo')}" th:errors="*{roomNo}"></div>
+
+            <fieldset class="choice-group">
+                <legend>报修类型</legend>
+                <label class="choice" th:each="c : ${categories}">
+                    <input type="radio" th:field="*{category}" th:value="${c}" required>
+                    <span th:text="${c.label}">类型</span>
+                </label>
+            </fieldset>
+            <div class="field-error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></div>
+
+            <label>故障描述
+                <textarea th:field="*{description}" rows="5" maxlength="500"
+                          placeholder="请描述故障情况，如：卫生间水龙头关不紧，一直滴水" required></textarea>
+            </label>
+            <div class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+
+            <label>故障图片（可选）
+                <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
+            </label>
+            <p class="muted small">支持 jpg / png / gif / webp，不超过 5MB。如提交失败需重新选择图片。</p>
+
+            <button type="submit" class="btn btn-primary">提交报修</button>
+        </form>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

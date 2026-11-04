@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('待接单')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('pending')}"></header>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <section class="card">
+        <div class="card-header">
+            <h2>待接单工单</h2>
+            <span class="muted" th:text="'共 ' + ${orders.size()} + ' 单，按提交时间先后排列'"></span>
+        </div>
+
+        <div class="table-wrap" th:if="${!orders.isEmpty()}">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>工单号</th>
+                    <th>类型</th>
+                    <th>位置</th>
+                    <th>故障描述</th>
+                    <th>图片</th>
+                    <th>提交时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="o : ${orders}">
+                    <td th:text="'#' + ${o.id}"></td>
+                    <td th:text="${o.category.label}"></td>
+                    <td th:text="${o.building} + ' ' + ${o.roomNo}"></td>
+                    <td class="ellipsis" th:text="${o.description}" th:title="${o.description}"></td>
+                    <td th:text="${o.imagePath != null} ? '有' : '-'"></td>
+                    <td th:text="${#temporals.format(o.createdAt, 'MM-dd HH:mm')}"></td>
+                    <td class="actions">
+                        <a class="btn btn-small" th:href="@{/repair/orders/{id}(id=${o.id})}">详情</a>
+                        <form th:action="@{/repair/orders/{id}/accept(id=${o.id})}" method="post"
+                              onsubmit="return confirm('确认接下这个工单？');">
+                            <button type="submit" class="btn btn-small btn-primary">接单</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty" th:if="${orders.isEmpty()}">暂时没有待接单的工单</div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

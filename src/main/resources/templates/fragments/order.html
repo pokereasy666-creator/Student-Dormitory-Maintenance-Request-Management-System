@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- 工单详情公共片段：学生端和维修人员端的详情页共用 -->
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- 处理进度：提交 → 接单 → 完成 → 评价 -->
+<ol th:fragment="progress(order)" class="progress">
+    <li class="done">
+        <strong>已提交</strong>
+        <span th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+    </li>
+    <li th:classappend="${order.acceptedAt != null} ? 'done'">
+        <strong>已接单</strong>
+        <span th:if="${order.acceptedAt != null}"
+              th:text="${#temporals.format(order.acceptedAt, 'yyyy-MM-dd HH:mm')}"></span>
+        <span th:if="${order.acceptedAt == null}">等待维修人员接单</span>
+    </li>
+    <li th:classappend="${order.completedAt != null} ? 'done'">
+        <strong>已完成</strong>
+        <span th:if="${order.completedAt != null}"
+              th:text="${#temporals.format(order.completedAt, 'yyyy-MM-dd HH:mm')}"></span>
+    </li>
+    <li th:classappend="${order.ratedAt != null} ? 'done'">
+        <strong>已评价</strong>
+        <span th:if="${order.ratedAt != null}"
+              th:text="${#temporals.format(order.ratedAt, 'yyyy-MM-dd HH:mm')}"></span>
+    </li>
+</ol>
+
+<!-- 工单基本信息 + 故障图片 -->
+<div th:fragment="info(order)">
+    <dl class="info-grid">
+        <dt>工单号</dt>
+        <dd th:text="'#' + ${order.id}"></dd>
+        <dt>状态</dt>
+        <dd><span th:replace="~{fragments/layout :: status(${order.status})}"></span></dd>
+        <dt>报修类型</dt>
+        <dd th:text="${order.category.label}"></dd>
+        <dt>报修位置</dt>
+        <dd th:text="${order.building} + ' ' + ${order.roomNo} + ' 室'"></dd>
+        <dt>报修学生</dt>
+        <dd th:text="${order.studentName} + '（' + ${order.studentPhone} + '）'"></dd>
+        <dt>维修人员</dt>
+        <dd th:text="${order.repairerName != null} ? ${order.repairerName} + '（' + ${order.repairerPhone} + '）' : '暂未接单'"></dd>
+        <dt>故障描述</dt>
+        <dd class="pre-wrap" th:text="${order.description}"></dd>
+        <dt>故障图片</dt>
+        <dd>
+            <a th:if="${order.imagePath != null}" th:href="@{'/uploads/' + ${order.imagePath}}" target="_blank">
+                <img class="order-image" th:src="@{'/uploads/' + ${order.imagePath}}" alt="故障图片">
+            </a>
+            <span th:if="${order.imagePath == null}" class="muted">未上传</span>
+        </dd>
+        <th:block th:if="${order.repairNote != null}">
+            <dt>维修备注</dt>
+            <dd class="pre-wrap" th:text="${order.repairNote}"></dd>
+        </th:block>
+    </dl>
+</div>
+
+<!-- 已有的评价内容 -->
+<div th:fragment="evaluation(order)" class="evaluation" th:if="${order.rating != null}">
+    <span th:replace="~{fragments/layout :: stars(${order.rating})}"></span>
+    <span class="muted" th:text="${order.rating} + ' 星'"></span>
+    <p class="pre-wrap" th:text="${order.evaluation != null} ? ${order.evaluation} : '（未填写文字评价）'"></p>
+</div>
+</body>
+</html>

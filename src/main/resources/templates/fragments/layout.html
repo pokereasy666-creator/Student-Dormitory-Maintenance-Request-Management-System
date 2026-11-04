@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!--
+  公共页面片段：其他页面通过 th:replace="~{fragments/layout :: 片段名}" 引用。
+  ${session.loginUser} 是登录时放入 session 的 LoginUser 对象，用来按角色显示不同的导航菜单。
+-->
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+
+<!-- 页面 <head>：title 为页面标题 -->
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' - 宿舍报修系统'">宿舍报修系统</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- 顶部导航栏：active 为当前菜单标识，用于高亮 -->
+<header th:fragment="nav(active)" class="navbar">
+    <div class="navbar-inner">
+        <a class="brand" th:href="@{/}">宿舍报修系统</a>
+        <nav class="nav-links" th:if="${session.loginUser != null}">
+            <!-- 学生菜单 -->
+            <th:block th:if="${session.loginUser.student}">
+                <a th:href="@{/student/home}" th:classappend="${active == 'home'} ? 'active'">首页公告</a>
+                <a th:href="@{/student/orders/new}" th:classappend="${active == 'new'} ? 'active'">我要报修</a>
+                <a th:href="@{/student/orders}" th:classappend="${active == 'orders'} ? 'active'">我的报修</a>
+            </th:block>
+            <!-- 维修人员菜单 -->
+            <th:block th:if="${session.loginUser.repairer}">
+                <a th:href="@{/repair/pending}" th:classappend="${active == 'pending'} ? 'active'">待接单</a>
+                <a th:href="@{/repair/mine}" th:classappend="${active == 'mine'} ? 'active'">我的维修</a>
+            </th:block>
+            <a th:href="@{/profile}" th:classappend="${active == 'profile'} ? 'active'">个人信息</a>
+            <a th:href="@{/profile/password}" th:classappend="${active == 'password'} ? 'active'">修改密码</a>
+        </nav>
+        <div class="nav-user" th:if="${session.loginUser != null}">
+            <span th:text="${session.loginUser.realName} + '（' + ${session.loginUser.role.label} + '）'">用户</span>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-link">退出登录</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<!-- 操作结果提示：controller 通过 addFlashAttribute / addAttribute 放入 success 或 error -->
+<div th:fragment="flash" class="flash">
+    <div class="alert alert-success" th:if="${success}" th:text="${success}">成功</div>
+    <div class="alert alert-error" th:if="${error}" th:text="${error}">错误</div>
+</div>
+
+<!-- 工单状态标签：不同状态不同颜色 -->
+<span th:fragment="status(s)" class="badge" th:classappend="'badge-' + ${s.name()}" th:text="${s.label}">状态</span>
+
+<!-- 星级显示：n 为 1~5 -->
+<span th:fragment="stars(n)" class="stars"
+      th:text="${#strings.repeat('★', n)} + ${#strings.repeat('☆', 5 - n)}">★★★★★</span>
+
+<footer th:fragment="footer" class="footer">学生宿舍报修管理系统</footer>
+</body>
+</html>

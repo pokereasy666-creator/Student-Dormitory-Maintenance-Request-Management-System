@@ -1,0 +1,14 @@
+# 测试环境配置：使用 H2 内存数据库（MySQL 兼容模式），运行 mvn test 不需要安装 MySQL
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:dorm_repair;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+
+app:
+  upload-dir: target/test-uploads
+
+logging:
+  level:
+    com.dorm.repair.mapper: info

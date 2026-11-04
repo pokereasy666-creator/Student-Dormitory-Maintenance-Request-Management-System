@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('学生注册')}"></head>
+<body class="auth-page">
+<main class="auth-card">
+    <h1>学生注册</h1>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <form th:action="@{/register}" th:object="${registerForm}" method="post" class="form">
+        <label>学号（登录账号）
+            <input type="text" th:field="*{username}" placeholder="4~20 位字母或数字" required>
+        </label>
+        <div class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+
+        <label>姓名
+            <input type="text" th:field="*{realName}" maxlength="20" required>
+        </label>
+        <div class="field-error" th:if="${#fields.hasErrors('realName')}" th:errors="*{realName}"></div>
+
+        <div class="form-row">
+            <label>楼栋
+                <select th:field="*{building}" required>
+                    <option value="">请选择</option>
+                    <option th:each="b : ${buildings}" th:value="${b}" th:text="${b}"></option>
+                </select>
+            </label>
+            <label>宿舍号
+                <input type="text" th:field="*{roomNo}" placeholder="如 302" maxlength="10" required>
+            </label>
+        </div>
+        <div class="field-error" th:if="${#fields.hasErrors('building')}" th:errors="*{building}"></div>
+        <div class="field-error" th:if="${#fields.hasErrors('roomNo')}" th:errors="*{roomNo}"></div>
+
+        <label>手机号
+            <input type="tel" th:field="*{phone}" placeholder="11 位手机号" maxlength="11" required>
+        </label>
+        <div class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+
+        <label>密码
+            <input type="password" th:field="*{password}" placeholder="6~20 位" autocomplete="new-password" required>
+        </label>
+        <div class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+
+        <label>确认密码
+            <input type="password" th:field="*{confirmPassword}" autocomplete="new-password" required>
+        </label>
+        <div class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+
+        <button type="submit" class="btn btn-primary btn-block">注册</button>
+    </form>
+    <p class="auth-switch">已有账号？<a th:href="@{/login}">返回登录</a></p>
+</main>
+</body>
+</html>

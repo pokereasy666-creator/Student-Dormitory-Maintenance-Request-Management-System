@@ -1,0 +1,14 @@
+# Maven 构建输出
+target/
+# 上传的报修图片（运行时生成，不提交）
+uploads/
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+# 系统文件
+.DS_Store
+*.log

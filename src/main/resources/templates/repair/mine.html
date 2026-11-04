@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('我的维修')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('mine')}"></header>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <section class="card">
+        <h2>我的维修记录</h2>
+
+        <!-- 维修人员接过的单只可能是"维修中"或"已完成"，因此不显示"待接单"标签 -->
+        <nav class="tabs">
+            <a th:href="@{/repair/mine}" th:classappend="${currentStatus == null} ? 'active'">全部</a>
+            <a th:each="s : ${statuses}" th:if="${s.name() != 'PENDING'}"
+               th:href="@{/repair/mine(status=${s})}"
+               th:classappend="${currentStatus == s} ? 'active'" th:text="${s.label}">状态</a>
+        </nav>
+
+        <div class="table-wrap" th:if="${!orders.isEmpty()}">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>工单号</th>
+                    <th>类型</th>
+                    <th>位置</th>
+                    <th>状态</th>
+                    <th>接单时间</th>
+                    <th>完成时间</th>
+                    <th>学生评价</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="o : ${orders}">
+                    <td th:text="'#' + ${o.id}"></td>
+                    <td th:text="${o.category.label}"></td>
+                    <td th:text="${o.building} + ' ' + ${o.roomNo}"></td>
+                    <td><span th:replace="~{fragments/layout :: status(${o.status})}"></span></td>
+                    <td th:text="${#temporals.format(o.acceptedAt, 'MM-dd HH:mm')}"></td>
+                    <td th:text="${o.completedAt != null} ? ${#temporals.format(o.completedAt, 'MM-dd HH:mm')} : '-'"></td>
+                    <td>
+                        <!-- th:replace 优先级高于 th:if，所以条件判断要放在外层 th:block 上 -->
+                        <th:block th:if="${o.rating != null}">
+                            <span th:replace="~{fragments/layout :: stars(${o.rating})}"></span>
+                        </th:block>
+                        <span th:if="${o.rating == null}" class="muted">-</span>
+                    </td>
+                    <td>
+                        <a th:if="${o.status.name() == 'IN_PROGRESS'}" class="btn btn-small btn-primary"
+                           th:href="@{/repair/orders/{id}(id=${o.id})}">去完成</a>
+                        <a th:unless="${o.status.name() == 'IN_PROGRESS'}" class="btn btn-small"
+                           th:href="@{/repair/orders/{id}(id=${o.id})}">查看</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty" th:if="${orders.isEmpty()}">
+            暂无记录。<a th:href="@{/repair/pending}">去接单</a>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

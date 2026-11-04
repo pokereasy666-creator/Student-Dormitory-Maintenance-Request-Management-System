@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<!--
+  通用错误页：
+  1. GlobalExceptionHandler 处理 BusinessException 时传入 message；
+  2. Spring Boot 默认错误处理（如 404 页面不存在）也会渲染此页面，传入 status。
+-->
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('出错了')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('')}"></header>
+<main class="container narrow">
+    <section class="card center">
+        <h2 th:text="${status == 404} ? '页面不存在' : '操作失败'">操作失败</h2>
+        <p th:text="${#strings.isEmpty(message)} ? '请求无法完成，请返回重试' : ${message}">请求无法完成</p>
+        <a class="btn btn-primary" th:href="@{/}">返回首页</a>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('工单详情')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav(${order.status.name() == 'PENDING'} ? 'pending' : 'mine')}"></header>
+<main class="container narrow">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <a class="back-link" th:if="${order.status.name() == 'PENDING'}" th:href="@{/repair/pending}">← 返回待接单</a>
+    <a class="back-link" th:unless="${order.status.name() == 'PENDING'}" th:href="@{/repair/mine}">← 返回我的维修</a>
+
+    <section class="card">
+        <h2>工单详情</h2>
+        <ol th:replace="~{fragments/order :: progress(${order})}"></ol>
+        <div th:replace="~{fragments/order :: info(${order})}"></div>
+    </section>
+
+    <!-- 待接单：显示接单按钮 -->
+    <section class="card" th:if="${order.status.name() == 'PENDING'}">
+        <form th:action="@{/repair/orders/{id}/accept(id=${order.id})}" method="post"
+              onsubmit="return confirm('确认接下这个工单？');">
+            <button type="submit" class="btn btn-primary">接单</button>
+        </form>
+    </section>
+
+    <!-- 维修中（只有接单人能看到这个页面）：填写维修备注并标记完成 -->
+    <section class="card" th:if="${order.status.name() == 'IN_PROGRESS'}">
+        <h2>完成维修</h2>
+        <form th:action="@{/repair/orders/{id}/complete(id=${order.id})}" th:object="${completeForm}"
+              method="post" class="form" onsubmit="return confirm('确认该工单已维修完成？');">
+            <label>维修备注
+                <textarea th:field="*{repairNote}" rows="4" maxlength="500"
+                          placeholder="如：更换了水龙头阀芯，已测试无漏水" required></textarea>
+            </label>
+            <button type="submit" class="btn btn-success">标记为已完成</button>
+        </form>
+    </section>
+
+    <!-- 已完成：显示学生评价 -->
+    <section class="card" th:if="${order.status.name() == 'COMPLETED'}">
+        <h2>学生评价</h2>
+        <div th:replace="~{fragments/order :: evaluation(${order})}"></div>
+        <p class="muted" th:if="${order.rating == null}">学生暂未评价。</p>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

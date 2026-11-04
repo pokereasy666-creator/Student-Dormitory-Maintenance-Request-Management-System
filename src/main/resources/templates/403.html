@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('无权访问')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('')}"></header>
+<main class="container narrow">
+    <section class="card center">
+        <h2>403 无权访问</h2>
+        <p th:text="${message} ?: '您没有权限访问该页面'">您没有权限访问该页面</p>
+        <a class="btn btn-primary" th:href="@{/}">返回首页</a>
+    </section>
+</main>
+</body>
+</html>

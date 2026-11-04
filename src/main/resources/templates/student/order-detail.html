@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('工单详情')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('orders')}"></header>
+<main class="container narrow">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <a class="back-link" th:href="@{/student/orders}">← 返回我的报修</a>
+
+    <section class="card">
+        <h2>工单详情</h2>
+        <ol th:replace="~{fragments/order :: progress(${order})}"></ol>
+        <div th:replace="~{fragments/order :: info(${order})}"></div>
+    </section>
+
+    <!-- 评价区域 -->
+    <section class="card">
+        <h2>服务评价</h2>
+
+        <!-- 1. 已评价：显示评价内容 -->
+        <div th:replace="~{fragments/order :: evaluation(${order})}"></div>
+
+        <!-- 2. 已完成未评价：显示评价表单 -->
+        <form th:if="${order.ratable}" th:action="@{/student/orders/{id}/rate(id=${order.id})}"
+              th:object="${rateForm}" method="post" class="form">
+            <div class="star-input" role="radiogroup" aria-label="星级">
+                <!-- 倒序排列配合 CSS 的 row-reverse，实现"选中第 N 颗，前 N 颗都亮" -->
+                <th:block th:each="i : ${#numbers.sequence(5, 1)}">
+                    <input type="radio" name="rating" th:id="'star' + ${i}" th:value="${i}" required>
+                    <label th:for="'star' + ${i}" th:title="${i} + ' 星'">★</label>
+                </th:block>
+            </div>
+            <label>评价内容（可选）
+                <textarea name="evaluation" rows="3" maxlength="200" placeholder="说说本次维修服务的感受"></textarea>
+            </label>
+            <button type="submit" class="btn btn-primary">提交评价</button>
+        </form>
+
+        <!-- 3. 未完成：提示 -->
+        <p class="muted" th:if="${order.status.name() != 'COMPLETED'}">维修完成后即可评价。</p>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

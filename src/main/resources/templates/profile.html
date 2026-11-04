@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('个人信息')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('profile')}"></header>
+<main class="container narrow">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <section class="card">
+        <h2>个人信息</h2>
+        <dl class="info-grid">
+            <dt th:text="${user.role.name() == 'STUDENT'} ? '学号' : '工号'">账号</dt>
+            <dd th:text="${user.username}"></dd>
+            <dt>角色</dt>
+            <dd th:text="${user.role.label}"></dd>
+        </dl>
+
+        <form th:action="@{/profile}" th:object="${profileForm}" method="post" class="form">
+            <label>姓名
+                <input type="text" th:field="*{realName}" maxlength="20" required>
+            </label>
+            <div class="field-error" th:if="${#fields.hasErrors('realName')}" th:errors="*{realName}"></div>
+
+            <label>手机号
+                <input type="tel" th:field="*{phone}" maxlength="11" required>
+            </label>
+            <div class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+
+            <!-- 只有学生有宿舍信息 -->
+            <div class="form-row" th:if="${user.role.name() == 'STUDENT'}">
+                <label>楼栋
+                    <select th:field="*{building}" required>
+                        <option value="">请选择</option>
+                        <option th:each="b : ${buildings}" th:value="${b}" th:text="${b}"></option>
+                    </select>
+                </label>
+                <label>宿舍号
+                    <input type="text" th:field="*{roomNo}" maxlength="10" required>
+                </label>
+            </div>
+            <div class="field-error" th:if="${#fields.hasErrors('roomNo')}" th:errors="*{roomNo}"></div>
+
+            <button type="submit" class="btn btn-primary">保存</button>
+        </form>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

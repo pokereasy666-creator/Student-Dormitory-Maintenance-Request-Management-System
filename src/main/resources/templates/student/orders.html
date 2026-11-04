@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('我的报修')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('orders')}"></header>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <section class="card">
+        <div class="card-header">
+            <h2>我的报修</h2>
+            <a class="btn btn-primary" th:href="@{/student/orders/new}">我要报修</a>
+        </div>
+
+        <!-- 状态筛选标签 -->
+        <nav class="tabs">
+            <a th:href="@{/student/orders}" th:classappend="${currentStatus == null} ? 'active'">全部</a>
+            <a th:each="s : ${statuses}" th:href="@{/student/orders(status=${s})}"
+               th:classappend="${currentStatus == s} ? 'active'" th:text="${s.label}">状态</a>
+        </nav>
+
+        <div class="table-wrap" th:if="${!orders.isEmpty()}">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>工单号</th>
+                    <th>类型</th>
+                    <th>位置</th>
+                    <th>故障描述</th>
+                    <th>状态</th>
+                    <th>提交时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="o : ${orders}">
+                    <td th:text="'#' + ${o.id}"></td>
+                    <td th:text="${o.category.label}"></td>
+                    <td th:text="${o.building} + ' ' + ${o.roomNo}"></td>
+                    <td class="ellipsis" th:text="${o.description}" th:title="${o.description}"></td>
+                    <td><span th:replace="~{fragments/layout :: status(${o.status})}"></span></td>
+                    <td th:text="${#temporals.format(o.createdAt, 'MM-dd HH:mm')}"></td>
+                    <td>
+                        <a th:if="${o.ratable}" class="btn btn-small btn-warning"
+                           th:href="@{/student/orders/{id}(id=${o.id})}">去评价</a>
+                        <a th:unless="${o.ratable}" class="btn btn-small"
+                           th:href="@{/student/orders/{id}(id=${o.id})}">查看</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty" th:if="${orders.isEmpty()}">
+            暂无工单。<a th:href="@{/student/orders/new}">去报修</a>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

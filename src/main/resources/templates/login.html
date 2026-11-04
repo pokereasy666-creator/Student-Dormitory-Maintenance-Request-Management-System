@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('登录')}"></head>
+<body class="auth-page">
+<main class="auth-card">
+    <h1>宿舍报修系统</h1>
+    <p class="muted">学生使用学号登录，维修人员使用工号登录</p>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <form th:action="@{/login}" th:object="${loginForm}" method="post" class="form">
+        <label>账号
+            <input type="text" th:field="*{username}" placeholder="学号 / 工号" autocomplete="username" required autofocus>
+        </label>
+        <div class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+
+        <label>密码
+            <input type="password" th:field="*{password}" placeholder="密码" autocomplete="current-password" required>
+        </label>
+        <div class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+
+        <button type="submit" class="btn btn-primary btn-block">登录</button>
+    </form>
+    <p class="auth-switch">还没有账号？<a th:href="@{/register}">学生注册</a></p>
+    <p class="muted small">维修人员账号由后勤统一开通，不支持注册</p>
+</main>
+</body>
+</html>
