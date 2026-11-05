@@ -1,0 +1,50 @@
+{#
+  页面公共布局：其他页面通过 {% extends "base.html" %} 继承。
+  子页面可在顶部设置变量：active（当前菜单，用于高亮）、narrow（窄版布局）。
+  current_user 是当前登录用户（未登录为 None），由 create_app() 中的 context_processor 提供。
+#}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %} - 宿舍报修系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body{% block body_class %}{% endblock %}>
+{% block body %}
+<header class="navbar">
+    <div class="navbar-inner">
+        <a class="brand" href="{{ url_for('auth.home') }}">宿舍报修系统</a>
+        {% if current_user %}
+        <nav class="nav-links">
+            {% if current_user.is_student %}
+            <a href="{{ url_for('student.home') }}" class="{{ 'active' if active == 'home' }}">首页公告</a>
+            <a href="{{ url_for('student.new_order') }}" class="{{ 'active' if active == 'new' }}">我要报修</a>
+            <a href="{{ url_for('student.my_orders') }}" class="{{ 'active' if active == 'orders' }}">我的报修</a>
+            {% endif %}
+            {% if current_user.is_repairer %}
+            <a href="{{ url_for('repair.pending') }}" class="{{ 'active' if active == 'pending' }}">待接单</a>
+            <a href="{{ url_for('repair.mine') }}" class="{{ 'active' if active == 'mine' }}">我的维修</a>
+            {% endif %}
+            <a href="{{ url_for('profile.profile') }}" class="{{ 'active' if active == 'profile' }}">个人信息</a>
+            <a href="{{ url_for('profile.password') }}" class="{{ 'active' if active == 'password' }}">修改密码</a>
+        </nav>
+        <div class="nav-user">
+            <span>{{ current_user.real_name }}（{{ current_user.role_label }}）</span>
+            <form action="{{ url_for('auth.logout') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn-link">退出登录</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</header>
+<main class="container{{ ' narrow' if narrow }}">
+    {% include "_flash.html" %}
+    {% block content %}{% endblock %}
+</main>
+<footer class="footer">学生宿舍报修管理系统</footer>
+{% endblock %}
+</body>
+</html>

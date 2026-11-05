@@ -1,0 +1,8 @@
+# Windows 脚本统一使用 CRLF 换行（.bat 用 LF 换行在部分情况下会解析出错）
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.ini text eol=crlf
+# 其他文本文件使用 LF
+*.py  text eol=lf
+*.html text eol=lf
+*.css text eol=lf

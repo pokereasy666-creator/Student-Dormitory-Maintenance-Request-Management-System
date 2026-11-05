@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "macros.html" import field_errors %}
+{% set active = 'new' %}{% set narrow = true %}
+{% block title %}提交报修{% endblock %}
+{% block content %}
+<section class="card">
+    <h2>提交报修</h2>
+    {# 上传图片必须使用 multipart/form-data 编码 #}
+    <form action="{{ url_for('student.submit_order') }}" method="post" enctype="multipart/form-data" class="form">
+        {{ form.csrf_token }}
+        <div class="form-row">
+            <label>楼栋{{ form.building(required=true) }}</label>
+            <label>宿舍号{{ form.room_no(placeholder="如 302", maxlength=10, required=true) }}</label>
+        </div>
+        {{ field_errors(form.building) }}{{ field_errors(form.room_no) }}
+
+        <fieldset class="choice-group">
+            <legend>报修类型</legend>
+            {% for option in form.category %}
+            <label class="choice">{{ option(required=true) }}<span>{{ option.label.text }}</span></label>
+            {% endfor %}
+        </fieldset>
+        {{ field_errors(form.category) }}
+
+        <label>故障描述
+            {{ form.description(rows=5, maxlength=500, placeholder="请描述故障情况，如：卫生间水龙头关不紧，一直滴水", required=true) }}
+        </label>
+        {{ field_errors(form.description) }}
+
+        <label>故障图片（可选）
+            <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
+        </label>
+        <p class="muted small">支持 jpg / png / gif / webp，不超过 5MB。如提交失败需重新选择图片。</p>
+        <button type="submit" class="btn btn-primary">提交报修</button>
+    </form>
+</section>
+{% endblock %}

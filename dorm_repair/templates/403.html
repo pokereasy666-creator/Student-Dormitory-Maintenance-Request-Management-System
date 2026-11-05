@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% set narrow = true %}
+{% block title %}无权访问{% endblock %}
+{% block content %}
+<section class="card center">
+    <h2>403 无权访问</h2>
+    <p>{{ message or '您没有权限访问该页面' }}</p>
+    <a class="btn btn-primary" href="{{ url_for('auth.home') }}">返回首页</a>
+</section>
+{% endblock %}

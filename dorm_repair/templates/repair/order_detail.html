@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% from "macros.html" import progress, order_info, evaluation, field_errors %}
+{% set is_pending = order.status.name == 'PENDING' %}
+{% set active = 'pending' if is_pending else 'mine' %}{% set narrow = true %}
+{% block title %}工单详情{% endblock %}
+{% block content %}
+{% if is_pending %}
+<a class="back-link" href="{{ url_for('repair.pending') }}">← 返回待接单</a>
+{% else %}
+<a class="back-link" href="{{ url_for('repair.mine') }}">← 返回我的维修</a>
+{% endif %}
+
+<section class="card">
+    <h2>工单详情</h2>
+    {{ progress(order) }}
+    {{ order_info(order) }}
+</section>
+
+{# 待接单：显示接单按钮 #}
+{% if is_pending %}
+<section class="card">
+    <form action="{{ url_for('repair.accept', order_id=order.id) }}" method="post"
+          onsubmit="return confirm('确认接下这个工单？');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-primary">接单</button>
+    </form>
+</section>
+{% endif %}
+
+{# 维修中（只有接单人能看到这个页面）：填写维修备注并标记完成 #}
+{% if order.status.name == 'IN_PROGRESS' %}
+<section class="card">
+    <h2>完成维修</h2>
+    <form action="{{ url_for('repair.complete', order_id=order.id) }}" method="post" class="form"
+          onsubmit="return confirm('确认该工单已维修完成？');">
+        {{ complete_form.csrf_token }}
+        <label>维修备注
+            {{ complete_form.repair_note(rows=4, maxlength=500, placeholder="如：更换了水龙头阀芯，已测试无漏水", required=true) }}
+        </label>
+        <button type="submit" class="btn btn-success">标记为已完成</button>
+    </form>
+</section>
+{% endif %}
+
+{# 已完成：显示学生评价 #}
+{% if order.status.name == 'COMPLETED' %}
+<section class="card">
+    <h2>学生评价</h2>
+    {{ evaluation(order) }}
+    {% if not order.rating %}<p class="muted">学生暂未评价。</p>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

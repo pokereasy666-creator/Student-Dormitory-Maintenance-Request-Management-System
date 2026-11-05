@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "macros.html" import field_errors %}
+{% block title %}登录{% endblock %}
+{% block body_class %} class="auth-page"{% endblock %}
+{% block body %}
+<main class="auth-card">
+    <h1>宿舍报修系统</h1>
+    <p class="muted">学生使用学号登录，维修人员使用工号登录</p>
+    {% include "_flash.html" %}
+    <form action="{{ url_for('auth.login') }}" method="post" class="form">
+        {{ form.csrf_token }}
+        <label>账号
+            {{ form.username(placeholder="学号 / 工号", autocomplete="username", required=true, autofocus=true) }}
+        </label>
+        {{ field_errors(form.username) }}
+        <label>密码
+            {{ form.password(placeholder="密码", autocomplete="current-password", required=true) }}
+        </label>
+        {{ field_errors(form.password) }}
+        <button type="submit" class="btn btn-primary btn-block">登录</button>
+    </form>
+    <p class="auth-switch">还没有账号？<a href="{{ url_for('auth.register') }}">学生注册</a></p>
+    <p class="muted small">维修人员账号由后勤统一开通，不支持注册</p>
+</main>
+{% endblock %}

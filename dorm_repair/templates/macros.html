@@ -1,0 +1,62 @@
+{# 公共宏：在页面中通过 {% from "macros.html" import ... %} 引入 #}
+
+{# 输入框下方的校验错误 #}
+{% macro field_errors(field) -%}
+    {% for message in field.errors %}<div class="field-error">{{ message }}</div>{% endfor %}
+{%- endmacro %}
+
+{# 工单状态标签：不同状态不同颜色 #}
+{% macro status_badge(status) -%}
+    <span class="badge badge-{{ status.name }}">{{ status.label }}</span>
+{%- endmacro %}
+
+{# 星级显示：n 为 1~5 #}
+{% macro stars(n) -%}
+    <span class="stars">{{ '★' * n }}{{ '☆' * (5 - n) }}</span>
+{%- endmacro %}
+
+{# 处理进度：提交 → 接单 → 完成 → 评价 #}
+{% macro progress(order) -%}
+<ol class="progress">
+    <li class="done"><strong>已提交</strong><span>{{ order.created_at | dt }}</span></li>
+    <li class="{{ 'done' if order.accepted_at }}"><strong>已接单</strong>
+        <span>{{ order.accepted_at | dt if order.accepted_at else '等待维修人员接单' }}</span></li>
+    <li class="{{ 'done' if order.completed_at }}"><strong>已完成</strong><span>{{ order.completed_at | dt }}</span></li>
+    <li class="{{ 'done' if order.rated_at }}"><strong>已评价</strong><span>{{ order.rated_at | dt }}</span></li>
+</ol>
+{%- endmacro %}
+
+{# 工单基本信息 + 故障图片（学生端、维修人员端详情页共用） #}
+{% macro order_info(order) -%}
+<dl class="info-grid">
+    <dt>工单号</dt><dd>#{{ order.id }}</dd>
+    <dt>状态</dt><dd>{{ status_badge(order.status) }}</dd>
+    <dt>报修类型</dt><dd>{{ order.category.label }}</dd>
+    <dt>报修位置</dt><dd>{{ order.building }} {{ order.room_no }} 室</dd>
+    <dt>报修学生</dt><dd>{{ order.student.real_name }}（{{ order.student.phone }}）</dd>
+    <dt>维修人员</dt>
+    <dd>{% if order.repairer %}{{ order.repairer.real_name }}（{{ order.repairer.phone }}）{% else %}暂未接单{% endif %}</dd>
+    <dt>故障描述</dt><dd class="pre-wrap">{{ order.description }}</dd>
+    <dt>故障图片</dt>
+    <dd>
+        {% if order.image_path %}
+        <a href="{{ url_for('files.uploaded_file', filename=order.image_path) }}" target="_blank">
+            <img class="order-image" src="{{ url_for('files.uploaded_file', filename=order.image_path) }}" alt="故障图片">
+        </a>
+        {% else %}<span class="muted">未上传</span>{% endif %}
+    </dd>
+    {% if order.repair_note %}
+    <dt>维修备注</dt><dd class="pre-wrap">{{ order.repair_note }}</dd>
+    {% endif %}
+</dl>
+{%- endmacro %}
+
+{# 已有的评价内容 #}
+{% macro evaluation(order) -%}
+{% if order.rating %}
+<div class="evaluation">
+    {{ stars(order.rating) }} <span class="muted">{{ order.rating }} 星</span>
+    <p class="pre-wrap">{{ order.evaluation or '（未填写文字评价）' }}</p>
+</div>
+{% endif %}
+{%- endmacro %}

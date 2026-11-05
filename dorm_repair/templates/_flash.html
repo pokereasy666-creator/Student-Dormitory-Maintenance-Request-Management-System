@@ -1,0 +1,7 @@
+{# 操作结果提示：flash() 的消息（跳转后显示）+ 视图直接传入的 error（重新显示表单时） #}
+<div class="flash">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+    <div class="alert alert-{{ 'success' if category == 'success' else 'error' }}">{{ message }}</div>
+    {% endfor %}
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+</div>

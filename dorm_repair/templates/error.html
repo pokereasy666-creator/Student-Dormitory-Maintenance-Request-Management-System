@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% set narrow = true %}
+{% block title %}{{ title or '出错了' }}{% endblock %}
+{% block content %}
+<section class="card center">
+    <h2>{{ title or '操作失败' }}</h2>
+    <p>{{ message or '请求无法完成，请返回重试' }}</p>
+    <a class="btn btn-primary" href="{{ url_for('auth.home') }}">返回首页</a>
+</section>
+{% endblock %}

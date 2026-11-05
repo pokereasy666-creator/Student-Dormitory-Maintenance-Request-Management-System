@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "macros.html" import progress, order_info, evaluation %}
+{% set active = 'orders' %}{% set narrow = true %}
+{% block title %}工单详情{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('student.my_orders') }}">← 返回我的报修</a>
+
+<section class="card">
+    <h2>工单详情</h2>
+    {{ progress(order) }}
+    {{ order_info(order) }}
+</section>
+
+<section class="card">
+    <h2>服务评价</h2>
+    {# 1. 已评价：显示评价内容 #}
+    {{ evaluation(order) }}
+
+    {# 2. 已完成未评价：显示评价表单 #}
+    {% if order.ratable %}
+    <form action="{{ url_for('student.rate', order_id=order.id) }}" method="post" class="form">
+        {{ rate_form.csrf_token }}
+        <div class="star-input" role="radiogroup" aria-label="星级">
+            {# 倒序排列配合 CSS 的 row-reverse，实现"选中第 N 颗，前 N 颗都亮" #}
+            {% for i in range(5, 0, -1) %}
+            <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" required>
+            <label for="star{{ i }}" title="{{ i }} 星">★</label>
+            {% endfor %}
+        </div>
+        <label>评价内容（可选）
+            <textarea name="evaluation" rows="3" maxlength="200" placeholder="说说本次维修服务的感受"></textarea>
+        </label>
+        <button type="submit" class="btn btn-primary">提交评价</button>
+    </form>
+    {% endif %}
+
+    {# 3. 未完成：提示 #}
+    {% if order.status.name != 'COMPLETED' %}<p class="muted">维修完成后即可评价。</p>{% endif %}
+</section>
+{% endblock %}

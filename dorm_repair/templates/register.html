@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "macros.html" import field_errors %}
+{% block title %}学生注册{% endblock %}
+{% block body_class %} class="auth-page"{% endblock %}
+{% block body %}
+<main class="auth-card">
+    <h1>学生注册</h1>
+    {% include "_flash.html" %}
+    <form action="{{ url_for('auth.register') }}" method="post" class="form">
+        {{ form.csrf_token }}
+        <label>学号（登录账号）{{ form.username(placeholder="4~20 位字母或数字", required=true) }}</label>
+        {{ field_errors(form.username) }}
+        <label>姓名{{ form.real_name(maxlength=20, required=true) }}</label>
+        {{ field_errors(form.real_name) }}
+        <div class="form-row">
+            <label>楼栋{{ form.building(required=true) }}</label>
+            <label>宿舍号{{ form.room_no(placeholder="如 302", maxlength=10, required=true) }}</label>
+        </div>
+        {{ field_errors(form.building) }}{{ field_errors(form.room_no) }}
+        <label>手机号{{ form.phone(type="tel", placeholder="11 位手机号", maxlength=11, required=true) }}</label>
+        {{ field_errors(form.phone) }}
+        <label>密码{{ form.password(placeholder="6~20 位", autocomplete="new-password", required=true) }}</label>
+        {{ field_errors(form.password) }}
+        <label>确认密码{{ form.confirm_password(autocomplete="new-password", required=true) }}</label>
+        {{ field_errors(form.confirm_password) }}
+        <button type="submit" class="btn btn-primary btn-block">注册</button>
+    </form>
+    <p class="auth-switch">已有账号？<a href="{{ url_for('auth.login') }}">返回登录</a></p>
+</main>
+{% endblock %}

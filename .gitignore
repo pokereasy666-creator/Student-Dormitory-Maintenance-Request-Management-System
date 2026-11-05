@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+# 本机配置（含数据库密码）与运行时生成的文件
+config.ini
+instance/
+logs/
+uploads/
+app.pid
+# 打包输出（package.bat 生成）
+dist/
+# IDE
+.idea/
+.vscode/
+.DS_Store

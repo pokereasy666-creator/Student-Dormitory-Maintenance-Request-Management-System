@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "macros.html" import status_badge, stars %}
+{% set active = 'mine' %}
+{% block title %}我的维修{% endblock %}
+{% block content %}
+<section class="card">
+    <h2>我的维修记录</h2>
+    {# 维修人员接过的单只可能是"维修中"或"已完成"，因此不显示"待接单"标签 #}
+    <nav class="tabs">
+        <a href="{{ url_for('repair.mine') }}" class="{{ 'active' if current_status is none }}">全部</a>
+        {% for s in statuses if s.name != 'PENDING' %}
+        <a href="{{ url_for('repair.mine', status=s.name) }}" class="{{ 'active' if current_status == s }}">{{ s.label }}</a>
+        {% endfor %}
+    </nav>
+    {% if orders %}
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr><th>工单号</th><th>类型</th><th>位置</th><th>状态</th><th>接单时间</th><th>完成时间</th><th>学生评价</th><th>操作</th></tr>
+            </thead>
+            <tbody>
+            {% for o in orders %}
+            <tr>
+                <td>#{{ o.id }}</td>
+                <td>{{ o.category.label }}</td>
+                <td>{{ o.building }} {{ o.room_no }}</td>
+                <td>{{ status_badge(o.status) }}</td>
+                <td>{{ o.accepted_at | dt('%m-%d %H:%M') }}</td>
+                <td>{{ o.completed_at | dt('%m-%d %H:%M') if o.completed_at else '-' }}</td>
+                <td>{% if o.rating %}{{ stars(o.rating) }}{% else %}<span class="muted">-</span>{% endif %}</td>
+                <td>
+                    {% if o.status.name == 'IN_PROGRESS' %}
+                    <a class="btn btn-small btn-primary" href="{{ url_for('repair.order_detail', order_id=o.id) }}">去完成</a>
+                    {% else %}
+                    <a class="btn btn-small" href="{{ url_for('repair.order_detail', order_id=o.id) }}">查看</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty">暂无记录。<a href="{{ url_for('repair.pending') }}">去接单</a></div>
+    {% endif %}
+</section>
+{% endblock %}

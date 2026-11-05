@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% set active = 'pending' %}
+{% block title %}待接单{% endblock %}
+{% block content %}
+<section class="card">
+    <div class="card-header">
+        <h2>待接单工单</h2>
+        <span class="muted">共 {{ orders | length }} 单，按提交时间先后排列</span>
+    </div>
+    {% if orders %}
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr><th>工单号</th><th>类型</th><th>位置</th><th>故障描述</th><th>图片</th><th>提交时间</th><th>操作</th></tr>
+            </thead>
+            <tbody>
+            {% for o in orders %}
+            <tr>
+                <td>#{{ o.id }}</td>
+                <td>{{ o.category.label }}</td>
+                <td>{{ o.building }} {{ o.room_no }}</td>
+                <td class="ellipsis" title="{{ o.description }}">{{ o.description }}</td>
+                <td>{{ '有' if o.image_path else '-' }}</td>
+                <td>{{ o.created_at | dt('%m-%d %H:%M') }}</td>
+                <td class="actions">
+                    <a class="btn btn-small" href="{{ url_for('repair.order_detail', order_id=o.id) }}">详情</a>
+                    <form action="{{ url_for('repair.accept', order_id=o.id) }}" method="post"
+                          onsubmit="return confirm('确认接下这个工单？');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-small btn-primary">接单</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty">暂时没有待接单的工单</div>
+    {% endif %}
+</section>
+{% endblock %}

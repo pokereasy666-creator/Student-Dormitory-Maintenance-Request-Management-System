@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "macros.html" import status_badge %}
+{% set active = 'orders' %}
+{% block title %}我的报修{% endblock %}
+{% block content %}
+<section class="card">
+    <div class="card-header">
+        <h2>我的报修</h2>
+        <a class="btn btn-primary" href="{{ url_for('student.new_order') }}">我要报修</a>
+    </div>
+
+    {# 状态筛选标签 #}
+    <nav class="tabs">
+        <a href="{{ url_for('student.my_orders') }}" class="{{ 'active' if current_status is none }}">全部</a>
+        {% for s in statuses %}
+        <a href="{{ url_for('student.my_orders', status=s.name) }}" class="{{ 'active' if current_status == s }}">{{ s.label }}</a>
+        {% endfor %}
+    </nav>
+
+    {% if orders %}
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr><th>工单号</th><th>类型</th><th>位置</th><th>故障描述</th><th>状态</th><th>提交时间</th><th>操作</th></tr>
+            </thead>
+            <tbody>
+            {% for o in orders %}
+            <tr>
+                <td>#{{ o.id }}</td>
+                <td>{{ o.category.label }}</td>
+                <td>{{ o.building }} {{ o.room_no }}</td>
+                <td class="ellipsis" title="{{ o.description }}">{{ o.description }}</td>
+                <td>{{ status_badge(o.status) }}</td>
+                <td>{{ o.created_at | dt('%m-%d %H:%M') }}</td>
+                <td>
+                    {% if o.ratable %}
+                    <a class="btn btn-small btn-warning" href="{{ url_for('student.order_detail', order_id=o.id) }}">去评价</a>
+                    {% else %}
+                    <a class="btn btn-small" href="{{ url_for('student.order_detail', order_id=o.id) }}">查看</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty">暂无工单。<a href="{{ url_for('student.new_order') }}">去报修</a></div>
+    {% endif %}
+</section>
+{% endblock %}

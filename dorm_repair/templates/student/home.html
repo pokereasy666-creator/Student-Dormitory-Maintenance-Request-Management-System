@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% set active = 'home' %}
+{% block title %}首页{% endblock %}
+{% block content %}
+<section class="welcome">
+    <div>
+        <h2>你好，{{ current_user.real_name }}</h2>
+        <p class="muted">宿舍设施有问题？在线提交报修，随时查看维修进度。</p>
+    </div>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('student.new_order') }}">我要报修</a>
+</section>
+
+{# 我的工单统计，点击进入对应状态的列表 #}
+<section class="stats">
+    {% for s in statuses %}
+    <a class="stat" href="{{ url_for('student.my_orders', status=s.name) }}">
+        <span class="stat-num">{{ counts[s] }}</span>
+        <span class="stat-label">{{ s.label }}</span>
+    </a>
+    {% endfor %}
+</section>
+
+{# 公告：按需求直接写死在页面中，如需修改直接编辑本文件 #}
+<section class="card">
+    <h2>公告</h2>
+    <ul class="notice-list">
+        <li>
+            <div class="notice-title">报修须知</div>
+            <p>报修单全天可提交，维修人员工作时间为每日 8:00–18:00，一般在 24 小时内接单处理。请准确填写楼栋、宿舍号和故障描述，必要时上传照片，便于维修人员提前准备工具和配件。</p>
+            <span class="notice-date">2026-09-01</span>
+        </li>
+        <li>
+            <div class="notice-title">紧急情况处理</div>
+            <p>遇到大面积漏水、电线冒烟、门锁损坏无法进出等紧急情况，请在提交报修的同时立即联系本楼宿管值班室，并注意人身安全。</p>
+            <span class="notice-date">2026-09-01</span>
+        </li>
+        <li>
+            <div class="notice-title">安全用电提醒</div>
+            <p>宿舍内禁止使用热得快、电饭锅等大功率电器。因使用违规电器导致跳闸的，请先移除违规电器后再报修。</p>
+            <span class="notice-date">2026-09-01</span>
+        </li>
+        <li>
+            <div class="notice-title">维修评价</div>
+            <p>维修完成后请在"我的报修"中对本次服务进行星级评价，您的反馈将帮助我们改进服务质量。</p>
+            <span class="notice-date">2026-09-01</span>
+        </li>
+    </ul>
+</section>
+{% endblock %}
