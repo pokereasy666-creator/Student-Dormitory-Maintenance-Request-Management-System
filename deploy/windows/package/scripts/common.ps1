@@ -32,10 +32,14 @@ function Get-ExeName([string]$Name) {
 function Get-JavaInfo([string]$JavaExe) {
     $psi = New-Object System.Diagnostics.ProcessStartInfo
     $psi.FileName = $JavaExe
-    $psi.Arguments = '-XshowSettings:properties -version'
+    # -Dsun.stderr.encoding / -Dstderr.encoding：让 Java 用 UTF-8 输出（Java 17 / 19+ 的写法各一个），
+    # 否则中文 Windows 上按 GBK 输出，JDK 位于中文用户名目录（如 C:\Users\张三\.jdks）时路径会解码成乱码
+    $psi.Arguments = '-Dsun.stderr.encoding=UTF-8 -Dstderr.encoding=UTF-8 -XshowSettings:properties -version'
     $psi.UseShellExecute = $false
     $psi.RedirectStandardError = $true
     $psi.RedirectStandardOutput = $true
+    $psi.StandardErrorEncoding = [System.Text.Encoding]::UTF8
+    $psi.StandardOutputEncoding = [System.Text.Encoding]::UTF8
     $psi.CreateNoWindow = $true
     try {
         $proc = [System.Diagnostics.Process]::Start($psi)
